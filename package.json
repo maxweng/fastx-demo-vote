@@ -1,0 +1,31 @@
+{
+  "name": "react-ethereum-dapp-example",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "async": "^2.6.0",
+    "ethereum-blockies": "git://github.com/leopoldjoy/blockies.git#patch-1",
+    "history": "^4.7.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-fontawesome": "^1.6.1",
+    "react-redux": "^5.0.6",
+    "react-router": "^4.2.0",
+    "react-router-redux": "^5.0.0-alpha.9",
+    "react-scripts": "1.1.0",
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0",
+    "web3": "^1.0.0-beta.33"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject",
+    "build:contracts": "truffle compile && npm run contracts:sync-src",
+    "contracts:sync-src": "rm -rf src/contracts && cp -R build/contracts/ src/contracts"
+  },
+  "devDependencies": {
+    "update-json-file": "^1.1.1"
+  }
+}
