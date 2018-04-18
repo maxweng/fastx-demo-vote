@@ -5,7 +5,7 @@ import async from 'async';
 import { AddressBlock } from '../../components';
 import FontAwesome from 'react-fontawesome';
 import * as blockchainActions from '../../actions/blockchain';
-import * as metaCoinActions from '../../actions/metaCoin';
+import * as metaCoinActions from '../../actions/FastXToken';
 import getWeb3 from '../../utils/getWeb3';
 import contractAddress from '../../contracts/addresses.json';
 import './FastXToken.css';
@@ -266,11 +266,11 @@ FastXToken.propTypes = {
 export default connect(
   state => ({
     coinbase: state.blockchain.coinbase,
-    amountToSend: state.metaCoin.amountToSend,
-    addressToSend: state.metaCoin.addressToSend,
-    metaBalance: state.metaCoin.metaBalance,
-    pastTransactions: state.metaCoin.pastTransactions,
-    userBalances: state.metaCoin.userBalances
+    amountToSend: state.token.amountToSend,
+    addressToSend: state.token.addressToSend,
+    metaBalance: state.token.metaBalance,
+    pastTransactions: state.token.pastTransactions,
+    userBalances: state.token.userBalances
   }),
   {
     ...blockchainActions,

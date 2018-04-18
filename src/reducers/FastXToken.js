@@ -1,4 +1,4 @@
-import * as types from '../actions/metaCoin-types';
+import * as types from '../actions/FastXToken-types';
 
 const initialState = {
   amountToSend: '',

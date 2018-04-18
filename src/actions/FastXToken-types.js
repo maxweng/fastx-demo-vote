@@ -1,0 +1,5 @@
+export const SET_AMOUNT_TO_SEND = 'token/SET_AMOUNT_TO_SEND';
+export const SET_ADDRESS_TO_SEND = 'token/SET_ADDRESS_TO_SEND';
+export const SET_META_BALANCE = 'token/SET_META_BALANCE';
+export const SET_PAST_TRANSACTIONS = 'token/SET_PAST_TRANSACTIONS';
+export const SET_USER_BALANCES = 'token/SET_USER_BALANCES';
