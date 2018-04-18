@@ -1,6 +1,7 @@
 import * as types from '../actions/blockchain-types';
 
 const initialState = {
+  networkId: -1,
   coinbase: '',
   balance: '',
   latestBlockNumber: 0,
@@ -10,6 +11,11 @@ const initialState = {
 
 export default function reducer(state = initialState, action = {}) {
   switch (action.type) {
+    case types.SET_NETWORK_ID:
+      return {
+        ...state,
+        networkId: action.networkId
+      };
     case types.SET_COINBASE:
       return {
         ...state,

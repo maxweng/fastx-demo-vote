@@ -1,4 +1,4 @@
-import * as types from './metaCoin-types';
+import * as types from './FastXToken-types';
 
 export function setAmountToSend(amount) {
   return {

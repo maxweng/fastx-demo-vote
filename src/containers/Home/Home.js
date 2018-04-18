@@ -87,7 +87,4 @@ export default connect(
   {
     ...blockchainActions
   }
-  // dispatch => ({
-  //   setSelectedCountry: bindActionCreators(countriesAndVillagesActions.setSelectedCountry, dispatch)
-  // })
 )(Home);

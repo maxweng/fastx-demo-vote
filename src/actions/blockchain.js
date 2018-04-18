@@ -2,6 +2,13 @@ import * as types from './blockchain-types';
 import path from 'path';
 import contractToken from '../contracts/FastXToken.json';
 
+export function setNetworkId(networkId) {
+  return {
+    type: types.SET_NETWORK_ID,
+    networkId
+  };
+}
+
 export function setCoinbase(coinbase) {
   return {
     type: types.SET_COINBASE,

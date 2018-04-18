@@ -2,7 +2,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 import { Route, Switch } from 'react-router';
-import { App, Home, FastXToken, NotFound } from './containers';
+import { App, Home, FastXToken, Leaderboard, NotFound } from './containers';
 import { store, history } from './store';
 
 export default () => (
@@ -17,6 +17,9 @@ export default () => (
 
           {/* Page routes */}
           <Route exact path="/token" component={FastXToken} />
+
+          {/* Page routes */}
+          <Route exact path="/leaderboard" component={Leaderboard} />
 
           {/* Catch all route */}
           <Route component={NotFound} status={404} />
