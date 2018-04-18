@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import axios from 'axios';
+
 import * as blockchainActions from '../../actions/blockchain';
 import * as userActions from '../../actions/user';
 import { Header } from '../../components';
 import getWeb3 from '../../utils/getWeb3';
+import { host } from '../../config';
 import './App.css';
 
 const web3 = getWeb3();
@@ -18,9 +21,17 @@ class App extends Component {
   loadUserProfile(address) {
     console.log('loading user profile for: '+address);
     return new Promise((resolve, reject) => {
-      resolve({
-        name: 'Max'
-      });
+      axios({
+          method: 'get',
+          url: host+'/api/user',
+          params: {
+             coinbase_address:address
+          }
+        })
+      .then((res) => {
+        resolve(res);
+      })
+      
     });
   }
 
@@ -49,7 +60,6 @@ class App extends Component {
       let userAddress = this.props.coinbase;
       // load the user info based on the wallet address
       this.loadUserProfile(userAddress).then( profile => {
-        console.log(profile);
         this.props.setProfile(profile);
       });
     });

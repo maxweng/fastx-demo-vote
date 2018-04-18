@@ -8,6 +8,7 @@
     "ethereum-blockies": "git://github.com/leopoldjoy/blockies.git#patch-1",
     "express": "^4.16.3",
     "history": "^4.7.2",
+    "moment": "^2.22.1",
     "mongoose": "^5.0.15",
     "react": "^16.2.0",
     "react-bootstrap": "^0.32.1",
@@ -19,11 +20,12 @@
     "react-scripts": "1.1.0",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
+    "socket.io": "^2.1.0",
     "swig": "^1.4.2"
   },
   "scripts": {
     "start": "react-scripts start",
-    "server": "node server.js",
+    "server": "node server/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
