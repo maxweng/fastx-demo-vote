@@ -38,7 +38,7 @@ export class Leaderboard extends Component {
             setProjects(projects);
         })
 
-        socket.on('vote', function(data) {
+        socket.on('vote:5ad73213c979e45789431322', function(data) {
             if(data['detail']){
                 alert(data['detail']);
             }else{

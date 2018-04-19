@@ -37,10 +37,10 @@ module.exports = function(socket) {
             .exec()
             .then(function(promiseResult){
                 if(!promiseResult){
-                    socket.emit('vote', {"detail": "not found User"});
+                    socket.emit('vote:'+data.id, {"detail": "not found User"});
                 }else{
                     if(promiseResult.gold < config.pollCreateGold){
-                        socket.emit('vote', {"detail": "user gold not enough"});
+                        socket.emit('vote:'+data.id, {"detail": "user gold not enough"});
                     }else{
                         User.update({coinbase_address: data.coinbase_address},{'gold':promiseResult.gold-data.gold},function (err, data) {});
 			      
@@ -50,7 +50,7 @@ module.exports = function(socket) {
 								_id: doc._id, 
 								choices: doc.choices
 							};
-							socket.emit('vote', theDoc);
+							socket.emit('vote:'+data.id, theDoc);
 						});
                     }   
                 }
