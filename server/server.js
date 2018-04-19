@@ -1,10 +1,13 @@
 let express    = require('express');
+let app        = require('express')();
+let http       = require('http').Server(app);
+let io = require('socket.io')(http);
 let bodyParser = require('body-parser');
 let mongoose   = require('mongoose');
 let Router     = require('react-router');
 let swig       = require('swig');
 let path       = require('path');
-let http       = require('http');
+
 
 let config = require('./config');
 let api = require('./api');
@@ -22,7 +25,7 @@ mongoose.connect(config.dataBase,options, function(err){
     }
 });
 
-let app = express();
+
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -45,10 +48,8 @@ app.get('/api/polls/polls', api.poll);
 app.get('/api/polls/:id', api.poll);
 app.post('/api/polls', api.poll);
 
-let server = http.createServer(app);
-let io = require('socket.io').listen(server);
-io.sockets.on('connection', api.vote);
+io.on('connection', api.vote);
 
-server.listen(config.port, function(){
+http.listen(config.port, function(){
   console.log('http server running on port ' + config.port);
 });  

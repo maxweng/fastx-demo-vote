@@ -15,12 +15,14 @@ module.exports = function(req, res, next){
                     let totalVotes = 0;
                     for(c in poll.choices) {
                         let choice = poll.choices[c];
-                        totalVotes += choice.gold;
+                        for(v in choice.votes) {
+                          var vote = choice.votes[v];
+                          totalVotes += parseFloat(vote.votes || 0);
+                        }    
                     }
                     poll.totalVotes = totalVotes;
                     res.send(poll);
-                }
-                
+                } 
             })
  
     }else{

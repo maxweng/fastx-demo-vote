@@ -3,11 +3,14 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {Table} from 'react-bootstrap';
 import axios from 'axios';
+import io    from 'socket.io-client';
 
 import * as leaderboardActions from '../../actions/leaderboard';
 import * as userActions from '../../actions/leaderboard';
 import { host } from '../../config';
 import './Leaderboard.css';
+
+let socket = io(host, { forceNew: true });
 
 export class Leaderboard extends Component {
     loadProjects() {
@@ -23,7 +26,6 @@ export class Leaderboard extends Component {
           }
         })
         .then((res) => {
-            console.log(res)
             resolve(res.data.choices)
         })
             
@@ -31,23 +33,43 @@ export class Leaderboard extends Component {
     };
 
     componentDidMount() {
-
         const {setProjects} = this.props;
         this.loadProjects().then( projects => {
-            console.log(projects);
             setProjects(projects);
         })
+
+        socket.on('vote', function(data) {
+            if(data['detail']){
+                alert(data['detail']);
+            }else{
+                setProjects(data.choices);
+            }
+        });
     };
+
+    vote(choiceId) {
+        let pollId = '5ad73213c979e45789431322';
+        let coinbase_address = "0x7a0c61edd8b5c0c5c1437aeb571d7ddbf8022be4";
+        let gold = 1;
+        let voteObj = { id: pollId, choice: choiceId, coinbase_address: coinbase_address, gold: gold};
+        
+        socket.emit('send:vote', voteObj);
+    }
 
     render() {
         const {projects} = this.props;
         const elProjectList = projects.map((project, i) => {
+            let votes = 0;
+            for(let i in project.votes){
+                votes += parseFloat(project.votes[i]['votes'] || 0);
+            }
+
             return (
                 <tr key={i}>
-                <td>{i+1}</td>
-                <td>{project.text}</td>
-                <td>{project.votes}</td>
-                <td>@mdo</td>
+                    <td>{i+1}</td>
+                    <td>{project.text}</td>
+                    <td>{votes}</td>
+                    <td onClick={this.vote.bind(this, project._id)}>投票</td>
                 </tr>
             );
         });
