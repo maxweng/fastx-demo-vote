@@ -42,7 +42,7 @@ module.exports = function(socket) {
                     if(promiseResult.gold < config.pollCreateGold){
                         socket.emit('vote', {"detail": "user gold not enough"});
                     }else{
-                        User.update({coinbase_address: data.coinbase_address},{'gold':promiseResult.gold-config.pollCreateGold},function (err, data) {});
+                        User.update({coinbase_address: data.coinbase_address},{'gold':promiseResult.gold-data.gold},function (err, data) {});
 			      
 						poll.save(function(err, doc) {
 							let theDoc = { 
