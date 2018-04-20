@@ -6,3 +6,10 @@ export function setProjects(projects) {
       projects
     };
   }
+
+export function setShowModel(isShow) {
+	return {
+	  type: types.SET_SHOW_MODEL,
+	  isShow
+	};
+}

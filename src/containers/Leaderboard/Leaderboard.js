@@ -22,6 +22,7 @@ class MyLargeModal extends Component{
         this.state = {
             name: ''
         }
+        console.log(this.props)
     }
 
     updateName(event) {
@@ -75,9 +76,6 @@ class MyLargeModal extends Component{
 export class Leaderboard extends Component {
     constructor(props) {
         super(props);
-        this.state = {
-            lgShow: false
-        };
     }
 
     loadProjects() {
@@ -119,6 +117,11 @@ export class Leaderboard extends Component {
         socket.emit('send:vote', voteObj);
     }
 
+    showModel() {
+        const {setShowModel} = this.props;
+        setShowModel(!this.props.isShow);
+    }
+
     render() {
         const {projects} = this.props;
         const elProjectList = projects.map((project, i) => {
@@ -137,7 +140,9 @@ export class Leaderboard extends Component {
             );
         });
         
-        let lgClose = () => this.setState({ lgShow: false });
+        let lgClose = () => {
+            this.showModel();
+        }
         let load = () => {
             this.loadProjects();
         }
@@ -156,8 +161,8 @@ export class Leaderboard extends Component {
                         {elProjectList}
                     </tbody>
                 </Table>
-                <Button bsStyle="primary" bsSize="large" onClick={()=>this.setState({ lgShow: true })}>创建项目</Button>
-                <MyLargeModal show={this.state.lgShow} onLoad={load} onHide={lgClose} />
+                <Button bsStyle="primary" bsSize="large" onClick={this.showModel.bind(this)}>创建项目</Button>
+                <MyLargeModal show={this.props.isShow} onLoad={load} onHide={lgClose} />
             </div>
         );
     }
@@ -170,6 +175,7 @@ Leaderboard.propTypes = {
 export default connect(
     state => ({
         projects: state.leaderboard.projects,
+        isShow: state.leaderboard.isShow,
         user: state.user
     }),
     {
