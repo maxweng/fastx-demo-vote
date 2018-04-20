@@ -29,7 +29,7 @@ class App extends Component {
           }
         })
       .then((res) => {
-        resolve(res);
+        resolve(res['data']);
       })
       
     });

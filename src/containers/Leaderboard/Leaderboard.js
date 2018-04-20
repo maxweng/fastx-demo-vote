@@ -9,50 +9,113 @@ import * as leaderboardActions from '../../actions/leaderboard';
 import * as userActions from '../../actions/leaderboard';
 import { host } from '../../config';
 import './Leaderboard.css';
+import {store} from '../../store'
 
+let Button = require('react-bootstrap').Button;
+let Modal = require('react-bootstrap').Modal;
+let userAddress;
 let socket = io(host, { forceNew: true });
 
-export class Leaderboard extends Component {
-    loadProjects() {
-        let address = this.props.user.account;
-        console.log('loading projects for: '+address);
-        //这里是测试，之后需要修改
-        return new Promise((resolve, reject) => {
+class MyLargeModal extends Component{
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: ''
+        }
+    }
+
+    updateName(event) {
+        this.state.name = event.target.value;
+        this.setState(this.state);
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+        var name = this.state.name;
+
+        if (!name) {
+            this.setState({
+                alertInfo: "请输入内容"
+            })
+            return;
+        }
+
         axios({
-          method: 'get',
-          url: host+'/api/polls/5ad73213c979e45789431322',
-          params: {
-             
+          method: 'post',
+          url: host+'/api/polls',
+          data: {
+            'name':name,
+            'coinbase_address':userAddress
           }
         })
         .then((res) => {
-            resolve(res.data.choices)
+            this.props.onHide();
+            this.props.onLoad();
         })
-            
-        });
-    };
+    }
 
-    componentDidMount() {
+  render() {
+    return (
+      <Modal {...this.props} bsSize="large" aria-labelledby="contained-modal-title-lg">
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-lg">创建项目</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <textarea style={{width:'100%',height:'200px'}} onChange={this.updateName.bind(this)}></textarea>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button bsStyle="primary" onClick={this.handleSubmit.bind(this)}>确定</Button>
+          <Button onClick={this.props.onHide}>取消</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+};
+
+export class Leaderboard extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            lgShow: false
+        };
+    }
+
+    loadProjects() {
         const {setProjects} = this.props;
-        this.loadProjects().then( projects => {
-            setProjects(projects);
+        let address = this.props.user.account;
+        console.log('loading projects for: '+address);
+        axios({
+          method: 'get',
+          url: host+'/api/polls',
+          params: {'limit':999}
+        })
+        .then((res) => {
+            setProjects(res['data']);
         })
 
-        socket.on('vote:5ad73213c979e45789431322', function(data) {
+        socket.on('vote', function(data) {
             if(data['detail']){
                 alert(data['detail']);
             }else{
-                setProjects(data.choices);
+                setProjects(data);
             }
         });
     };
 
-    vote(choiceId) {
-        let pollId = '5ad73213c979e45789431322';
-        let coinbase_address = "0x7a0c61edd8b5c0c5c1437aeb571d7ddbf8022be4";
-        let gold = 1;
-        let voteObj = { id: pollId, choice: choiceId, coinbase_address: coinbase_address, gold: gold};
-        
+    componentDidMount() {
+        let loadProjects = this.loadProjects.bind(this);
+
+        const unsubscribe = store.subscribe(function(){
+            if(store.getState().user.account){
+                userAddress = store.getState().user.account;
+                loadProjects();
+                unsubscribe();
+            }
+        })  
+    };
+
+    vote(pollId) {
+        let voteObj = { id: pollId, coinbase_address: userAddress, gold: 1};
         socket.emit('send:vote', voteObj);
     }
 
@@ -60,34 +123,41 @@ export class Leaderboard extends Component {
         const {projects} = this.props;
         const elProjectList = projects.map((project, i) => {
             let votes = 0;
-            for(let i in project.votes){
-                votes += parseFloat(project.votes[i]['votes'] || 0);
+            for(let i in project.choices){
+                votes += parseFloat(project.choices[i]['votes'] || 0);
             }
 
             return (
                 <tr key={i}>
                     <td>{i+1}</td>
-                    <td>{project.text}</td>
+                    <td>{project.name}</td>
                     <td>{votes}</td>
                     <td onClick={this.vote.bind(this, project._id)}>投票</td>
                 </tr>
             );
         });
+        
+        let lgClose = () => this.setState({ lgShow: false });
+        let load = () => {
+            this.loadProjects();
+        }
         return (
             <div className='Leaderboard-wrap container'>
-            <Table striped bordered hover>
-            <thead>
-                <tr>
-                <th>#</th>
-                <th>Project Name</th>
-                <th>Votes</th>
-                <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {elProjectList}
-            </tbody>
-            </Table>
+                <Table striped bordered hover>
+                    <thead>
+                        <tr>
+                        <th>#</th>
+                        <th>Project Name</th>
+                        <th>Votes</th>
+                        <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {elProjectList}
+                    </tbody>
+                </Table>
+                <Button bsStyle="primary" bsSize="large" onClick={()=>this.setState({ lgShow: true })}>创建项目</Button>
+                <MyLargeModal show={this.state.lgShow} onLoad={load} onHide={lgClose} />
             </div>
         );
     }
@@ -95,7 +165,7 @@ export class Leaderboard extends Component {
 
 Leaderboard.propTypes = {
     projects: PropTypes.arrayOf(PropTypes.object).isRequired
-  };
+};
 
 export default connect(
     state => ({
@@ -106,7 +176,4 @@ export default connect(
       ...leaderboardActions,
       ...userActions
     }
-    // dispatch => ({
-    //   setSelectedCountry: bindActionCreators(countriesAndVillagesActions.setSelectedCountry, dispatch)
-    // })
   )(Leaderboard);

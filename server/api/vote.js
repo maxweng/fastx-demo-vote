@@ -21,16 +21,17 @@ module.exports = function(socket) {
 		if(data.id)
 		Poll.findById(data.id, function(err, poll) {
 			if(!poll)return;
-			let choice = poll.choices.id(data.choice);
+			// let choice = poll.choices.id(data.choice);
+			let choice = poll.choices;
 			let userVoted = false;
-			for(let c in choice.votes){
-				if(choice.votes[c].user == data.coinbase_address){
+			for(let c in choice){
+				if(choice[c].user == data.coinbase_address){
 					userVoted = true;
-					choice.votes[c].votes += data.gold;
+					choice[c].votes += data.gold;
 				}
 			}
 			if(!userVoted){
-				choice.votes.push({'user':data.coinbase_address,'votes':data.gold || 0})
+				choice.push({'user':data.coinbase_address,'votes':data.gold || 0})
 			}
 
 			User.findOne({"coinbase_address":data.coinbase_address})
@@ -45,12 +46,9 @@ module.exports = function(socket) {
                         User.update({coinbase_address: data.coinbase_address},{'gold':promiseResult.gold-data.gold},function (err, data) {});
 			      
 						poll.save(function(err, doc) {
-							let theDoc = { 
-								name: doc.name, 
-								_id: doc._id, 
-								choices: doc.choices
-							};
-							socket.emit('vote:'+data.id, theDoc);
+							Poll.find({}, function(err, list){
+								socket.emit('vote', list);
+							})
 						});
                     }   
                 }

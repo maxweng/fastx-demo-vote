@@ -6,35 +6,33 @@ let User = require('../models/User');
 let config = require('../config');
 
 module.exports = function(req, res, next){
-    if(req.params.id){
-        Polls.findOne({'_id':req.params.id})
-            .then(function(poll){
-                if(!poll){
-                    res.status(404).json({"detail": "not found Polls"})
-                }else{
-                    let totalVotes = 0;
-                    for(c in poll.choices) {
-                        let choice = poll.choices[c];
-                        for(v in choice.votes) {
-                          var vote = choice.votes[v];
-                          totalVotes += parseFloat(vote.votes || 0);
-                        }    
-                    }
-                    poll.totalVotes = totalVotes;
-                    res.send(poll);
-                } 
-            })
+    // if(req.params.id){
+    //     Polls.findOne({'_id':req.params.id})
+    //         .then(function(poll){
+    //             if(!poll){
+    //                 res.status(404).json({"detail": "not found Polls"})
+    //             }else{
+    //                 let totalVotes = 0;
+    //                 for(c in poll.choices) {
+    //                     let choice = poll.choices[c];
+    //                     // for(v in choice.votes) {
+    //                     //   var vote = choice.votes[v];
+    //                     //   totalVotes += parseFloat(vote.votes || 0);
+    //                     // }
+    //                     totalVotes += parseFloat(choice.votes || 0);
+    //                 }
+    //                 poll.totalVotes = totalVotes;
+    //                 res.send(poll);
+    //             } 
+    //         })
  
-    }else{
+    // }else{
         if(req.method == "POST"){
             let reqBody = req.body,
-                choices = reqBody.choices.filter(function(v) { return v.text != ''; }),
+                choices = [];//reqBody.choices.filter(function(v) { return v.text != ''; }),
                 pollObj = {name: reqBody.name, choices: choices, author: reqBody.coinbase_address};
-
             let poll = new Polls(pollObj);
-             console.log(pollObj)
-
-            User.findOne({"coinbase_address":req.body.coinbase_address})
+            User.findOne({"coinbase_address":reqBody.coinbase_address})
             .exec()
             .then(function(promiseResult){
                 if(!promiseResult){
@@ -43,7 +41,7 @@ module.exports = function(req, res, next){
                     if(promiseResult.gold < config.pollCreateGold){
                         res.status(400).json({"detail": "user gold not enough"})
                     }else{
-                        User.update({coinbase_address: req.query.coinbase_address},{'gold':promiseResult.gold-config.pollCreateGold},function (err, data) {});
+                        User.update({coinbase_address: reqBody.coinbase_address},{'gold':promiseResult.gold-config.pollCreateGold},function (err, data) {});
                         poll.save(function(err, poolPromiseResult) {
                             if(err || !promiseResult) {
                               res.status(500).send(err);
@@ -68,10 +66,6 @@ module.exports = function(req, res, next){
             .then(function(promiseResult){
                 res.send(promiseResult);
             })
-            .error(function(error){
-                res.status(500).send(error);
-            })
         }
-        
-    }
+    //}
 }

@@ -44,8 +44,7 @@ app.use(function(req, res, next) {
 
 app.get('/api/user', api.user);
 
-app.get('/api/polls/polls', api.poll);
-app.get('/api/polls/:id', api.poll);
+app.get('/api/polls', api.poll);
 app.post('/api/polls', api.poll);
 
 io.on('connection', api.vote);
