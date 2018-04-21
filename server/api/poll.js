@@ -56,7 +56,7 @@ module.exports = function(req, res, next){
                               res.status(500).send(err);
                             } else {
                               res.send(poolPromiseResult);
-                            }   
+                            }
                         });
 //                     }   
                 }

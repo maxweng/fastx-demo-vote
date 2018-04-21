@@ -85,6 +85,9 @@ class MyLargeModal extends Component{
 export class Leaderboard extends Component {
     constructor(props) {
         super(props);
+        this.state = {
+            key: ''
+        }
     }
 
     loadProjects() {
@@ -144,7 +147,12 @@ export class Leaderboard extends Component {
     };
 
     vote(pollId) {
-        let voteObj = { id: pollId, coinbase_address: userAddress, gold: 1};
+        let key = this.state.key;
+        if(key == null || key == ""){
+            alert("Set key first");
+            return;
+        }
+        let voteObj = { id: pollId, coinbase_address: userAddress, key:key, gold: 1};
         socket.emit('send:vote', voteObj);
     }
 
@@ -176,7 +184,7 @@ export class Leaderboard extends Component {
                     <td>{i+1}</td>
                     <td>{project.name}</td>
                     <td>{votes}</td>
-                    <td onClick={this.vote.bind(this, project._id)}>vote</td>
+                    <td><Button bsSize="small" onClick={this.vote.bind(this, project._id)}>Vote</Button></td>
                 </tr>
             );
         });
@@ -202,6 +210,13 @@ export class Leaderboard extends Component {
                 <div>
                     <span>Gold Balance: {gold_balance}</span>
                     <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold.bind(this)} style={{margin: "2px 10px"}}>I Need More Gold</Button>
+                    <Button bsSize="small" onClick={()=>{
+                        var key = prompt("Set your key, FOR TEST USE ONLY!");
+                        self.setState({
+                            ...self.state,
+                            key: key,
+                        });
+                    }} style={{margin: "2px 10px"}}>Set Key ( FOR TEST USE ONLY )</Button>
                 </div>
                 <br />
                 <Table striped bordered hover>
@@ -217,7 +232,7 @@ export class Leaderboard extends Component {
                         {elProjectList}
                     </tbody>
                 </Table>
-                <Button bsStyle="primary" bsSize="large" onClick={this.showModel.bind(this)}>Create Project</Button>
+                <Button bsStyle="primary" bsSize="small" onClick={this.showModel.bind(this)}>Create Project</Button>
                 <MyLargeModal show={this.props.isShow} onLoad={load} onHide={lgClose} />
             </div>
         );
