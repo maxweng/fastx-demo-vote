@@ -1,0 +1,1 @@
+export const SET_BALANCES = 'fastxchain/SET_BALANCES';

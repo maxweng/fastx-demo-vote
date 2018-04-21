@@ -6,8 +6,8 @@ import axios from 'axios';
 import io    from 'socket.io-client';
 
 import * as leaderboardActions from '../../actions/leaderboard';
-import * as userActions from '../../actions/leaderboard';
-import { host } from '../../config';
+import * as fastXChainActions from '../../actions/FastXChain';
+import { host, fastXRpc } from '../../config';
 import './Leaderboard.css';
 import {store} from '../../store'
 
@@ -15,6 +15,15 @@ let Button = require('react-bootstrap').Button;
 let Modal = require('react-bootstrap').Modal;
 let userAddress;
 let socket = io(host, { forceNew: true });
+
+let makeFastXChainRpcRequest = (params) => {
+    return axios.post(fastXRpc, {
+        "method": "get_balance",
+        "params": params,
+        "jsonrpc": "2.0",
+        "id": 0
+    })
+}
 
 class MyLargeModal extends Component{
     constructor(props) {
@@ -99,9 +108,20 @@ export class Leaderboard extends Component {
             }
         });
     };
+    
+    loadBalance() {
+        const {setBalances} = this.props;
+        let address = this.props.user.account;
+        console.log('loading balances for: '+address);
+        makeFastXChainRpcRequest([address, "latest"])
+        .then((res) => {
+            setBalances(res.data.result);
+        })
+    }
 
     componentDidMount() {
         let loadProjects = this.loadProjects.bind(this);
+        let loadBalance = this.loadBalance.bind(this);
 
         const unsubscribe = store.subscribe(function(){
             if(store.getState().user.account){
@@ -123,7 +143,10 @@ export class Leaderboard extends Component {
     }
 
     render() {
-        const {projects} = this.props;
+        const self = this;
+        const {projects, fastxchain} = this.props;
+        const balances = fastxchain.balances
+        console.log(balances)
         const elProjectList = projects.map((project, i) => {
             let votes = 0;
             for(let i in project.choices){
@@ -139,6 +162,16 @@ export class Leaderboard extends Component {
                 </tr>
             );
         });
+        
+        if(window.loadFastXTokenBalance == null){
+            window.loadFastXTokenBalance = ()=>{
+                window.setTimeout(()=>{
+                    self.loadBalance();
+                    window.loadFastXTokenBalance()
+                }, 1000);
+            }
+            window.loadFastXTokenBalance();
+        }
         
         let lgClose = () => {
             this.showModel();
@@ -176,10 +209,11 @@ export default connect(
     state => ({
         projects: state.leaderboard.projects,
         isShow: state.leaderboard.isShow,
-        user: state.user
+        user: state.user,
+        fastxchain: state.fastxchain,
     }),
     {
       ...leaderboardActions,
-      ...userActions
+      ...fastXChainActions
     }
   )(Leaderboard);
