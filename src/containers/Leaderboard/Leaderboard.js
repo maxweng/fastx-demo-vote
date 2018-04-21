@@ -118,6 +118,17 @@ export class Leaderboard extends Component {
             setBalances(res.data.result);
         })
     }
+    
+    needMoreGold() {
+        const self = this;
+        let address = this.props.user.account;
+        axios.post(host+'/api/golds', {
+          address: address
+        })
+        .then((res) => {
+            self.loadBalance();
+        })
+    }
 
     componentDidMount() {
         let loadProjects = this.loadProjects.bind(this);
@@ -145,8 +156,15 @@ export class Leaderboard extends Component {
     render() {
         const self = this;
         const {projects, fastxchain} = this.props;
-        const balances = fastxchain.balances
-        console.log(balances)
+        const balances = fastxchain.balances;
+        let eth_balance = 0;
+        if(balances.FT){
+            balances.FT.forEach((ft) => {
+                if(ft[0] == "0000000000000000000000000000000000000000"){
+                    eth_balance = ft[1];
+                }
+            });
+        }
         const elProjectList = projects.map((project, i) => {
             let votes = 0;
             for(let i in project.choices){
@@ -181,6 +199,11 @@ export class Leaderboard extends Component {
         }
         return (
             <div className='Leaderboard-wrap container'>
+                <div>
+                    <span>Gold Balance: {eth_balance}</span>
+                    <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold.bind(this)} style={{margin: "2px 10px"}}>I Need More Gold</Button>
+                </div>
+                <br />
                 <Table striped bordered hover>
                     <thead>
                         <tr>
@@ -194,7 +217,7 @@ export class Leaderboard extends Component {
                         {elProjectList}
                     </tbody>
                 </Table>
-                <Button bsStyle="primary" bsSize="large" onClick={this.showModel.bind(this)}>创建项目</Button>
+                <Button bsStyle="primary" bsSize="large" onClick={this.showModel.bind(this)}>Create Project</Button>
                 <MyLargeModal show={this.props.isShow} onLoad={load} onHide={lgClose} />
             </div>
         );

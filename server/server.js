@@ -46,6 +46,7 @@ app.get('/api/user', api.user);
 
 app.get('/api/polls', api.poll);
 app.post('/api/polls', api.poll);
+app.post('/api/golds', api.gold);
 
 io.on('connection', api.vote);
 
