@@ -7,7 +7,7 @@ import io    from 'socket.io-client';
 
 import * as leaderboardActions from '../../actions/leaderboard';
 import * as fastXChainActions from '../../actions/FastXChain';
-import { host, fastXRpc } from '../../config';
+import { host, fastXRpc, goldContractAddress } from '../../config';
 import './Leaderboard.css';
 import {store} from '../../store'
 
@@ -157,11 +157,11 @@ export class Leaderboard extends Component {
         const self = this;
         const {projects, fastxchain} = this.props;
         const balances = fastxchain.balances;
-        let eth_balance = 0;
+        let gold_balance = 0;
         if(balances.FT){
             balances.FT.forEach((ft) => {
-                if(ft[0] == "0000000000000000000000000000000000000000"){
-                    eth_balance = ft[1];
+                if(ft[0].toLowerCase() == goldContractAddress.toLowerCase()){
+                    gold_balance = ft[1];
                 }
             });
         }
@@ -176,7 +176,7 @@ export class Leaderboard extends Component {
                     <td>{i+1}</td>
                     <td>{project.name}</td>
                     <td>{votes}</td>
-                    <td onClick={this.vote.bind(this, project._id)}>投票</td>
+                    <td onClick={this.vote.bind(this, project._id)}>vote</td>
                 </tr>
             );
         });
@@ -200,7 +200,7 @@ export class Leaderboard extends Component {
         return (
             <div className='Leaderboard-wrap container'>
                 <div>
-                    <span>Gold Balance: {eth_balance}</span>
+                    <span>Gold Balance: {gold_balance}</span>
                     <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold.bind(this)} style={{margin: "2px 10px"}}>I Need More Gold</Button>
                 </div>
                 <br />

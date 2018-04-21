@@ -32,15 +32,24 @@ module.exports = function(req, res, next){
                 choices = [];//reqBody.choices.filter(function(v) { return v.text != ''; }),
                 pollObj = {name: reqBody.name, choices: choices, author: reqBody.coinbase_address};
             let poll = new Polls(pollObj);
+/*
+            poll.save(function(err, poolPromiseResult) {
+                if(err || !promiseResult) {
+                  res.status(500).send(err);
+                } else {
+                  res.send(poolPromiseResult);
+                }   
+            });
+*/
             User.findOne({"coinbase_address":reqBody.coinbase_address})
             .exec()
             .then(function(promiseResult){
                 if(!promiseResult){
                    res.status(404).json({"detail": "not found User"})
                 }else{
-                    if(promiseResult.gold < config.pollCreateGold){
-                        res.status(400).json({"detail": "user gold not enough"})
-                    }else{
+//                     if(promiseResult.gold < config.pollCreateGold){
+//                         res.status(400).json({"detail": "user gold not enough"})
+//                     }else{
                         User.update({coinbase_address: reqBody.coinbase_address},{'gold':promiseResult.gold-config.pollCreateGold},function (err, data) {});
                         poll.save(function(err, poolPromiseResult) {
                             if(err || !promiseResult) {
@@ -49,7 +58,7 @@ module.exports = function(req, res, next){
                               res.send(poolPromiseResult);
                             }   
                         });
-                    }   
+//                     }   
                 }
             })
         }else{
