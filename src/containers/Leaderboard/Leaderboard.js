@@ -173,15 +173,23 @@ export class Leaderboard extends Component {
                 }
             });
         }
-        const elProjectList = projects.map((project, i) => {
+        projects.map((project, i) => {
+            let votes = 0;
+            for(let i in project.choices){
+                votes += parseFloat(project.choices[i]['votes'] || 0);
+            }
+            project.votes = votes;
+        })
+        const elProjectList = projects.sort((a, b)=>{
+            return b.votes - a.votes;
+        }).map((project, i) => {
             let votes = 0;
             for(let i in project.choices){
                 votes += parseFloat(project.choices[i]['votes'] || 0);
             }
 
             return (
-                <tr key={i}>
-                    <td>{i+1}</td>
+                <tr key={project._id}>
                     <td>{project.name}</td>
                     <td>{votes}</td>
                     <td><Button bsSize="small" onClick={this.vote.bind(this, project._id)}>Vote</Button></td>
@@ -222,7 +230,6 @@ export class Leaderboard extends Component {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
-                        <th>#</th>
                         <th>Project Name</th>
                         <th>Votes</th>
                         <th>Actions</th>
