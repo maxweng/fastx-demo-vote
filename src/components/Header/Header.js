@@ -19,7 +19,7 @@ class Header extends Component {
                 <Navbar.Collapse>
                     <Nav>
                         <NavItem eventKey={1} href="leaderboard">
-                            投票
+                            Vote
                         </NavItem>
                         <NavItem eventKey={2} href="#">
                             Link
