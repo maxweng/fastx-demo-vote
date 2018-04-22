@@ -174,6 +174,9 @@ export class Leaderboard extends Component {
             });
         }
         projects.map((project, i) => {
+    		let address = ""+project._id;
+    		address = "0x" + "0".repeat(40 - address.length) + address;
+            project.address = address;
             let votes = 0;
             for(let i in project.choices){
                 votes += parseFloat(project.choices[i]['votes'] || 0);
@@ -190,6 +193,7 @@ export class Leaderboard extends Component {
 
             return (
                 <tr key={project._id}>
+                    <td>{project.address}</td>
                     <td>{project.name}</td>
                     <td>{votes}</td>
                     <td><Button bsSize="small" onClick={this.vote.bind(this, project._id)}>Vote</Button></td>
@@ -217,7 +221,7 @@ export class Leaderboard extends Component {
             <div className='Leaderboard-wrap container'>
                 <div>
                     <span>Gold Balance: {gold_balance}</span>
-                    <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold.bind(this)} style={{margin: "2px 10px"}}>I Need More Gold</Button>
+                    <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold.bind(this)} style={{margin: "2px 0px 2px 10px"}}>I Need More Gold</Button>
                     <Button bsSize="small" onClick={()=>{
                         var key = prompt("Set your key, FOR TEST USE ONLY!");
                         self.setState({
@@ -230,6 +234,7 @@ export class Leaderboard extends Component {
                 <Table striped bordered hover>
                     <thead>
                         <tr>
+                        <th style={{width: 465}}>Address</th>
                         <th>Project Name</th>
                         <th>Votes</th>
                         <th>Actions</th>
