@@ -44,27 +44,11 @@ module.exports = function(socket) {
 //                         socket.emit('vote:'+data.id, {"detail": "user gold not enough"});
 //                     }else{
 //                         User.update({coinbase_address: data.coinbase_address},{'gold':promiseResult.gold-data.gold},function (err, data) {});
-
-            		let address = ""+poll._id;
-            		address = "0x" + "0".repeat(40 - address.length) + address;
-            		let cmd = 'cd /share/plasma-mvp && python plasma_demo/sendtx.py ' + address + ' ' + data.coinbase_address + ' ' + data.key;
-            		console.log(cmd)
-                    exec(cmd,
-                    (error, stdout, stderr) => {
-                        console.log(`stdout: ${stdout}`);
-                        console.log(`stderr: ${stderr}`);
-                        console.log(`error: ${error}`);
-                        if (error !== null) {
-                            socket.emit('vote:'+data.id, {"detail": error});
-                        } else {
-    						poll.save(function(err, doc) {
-    							Poll.find({}, function(err, list){
-    								socket.emit('vote', list);
-    							})
-    						});
-                        }
-                    });
-//                     }   
+					poll.save(function(err, doc) {
+						Poll.find({}, function(err, list){
+							socket.emit('vote', list);
+						})
+					});  
                 }
             })     
 		});
