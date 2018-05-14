@@ -236,33 +236,6 @@ export class Leaderboard extends Component {
         setShowModel(!this.props.isShow);
     }
 
-    callContract = () => {
-        const {coinbase} = this.props;
-
-        console.log(coinbase);
-        let goldContract = new web3.eth.Contract(
-            tokenContract.abi,
-            goldContractAddress,
-            {
-              from: coinbase,
-              // gasPrice: '20000000000', // default gas price in wei, 20 gwei in this case
-            }
-        );
-        // console.log(goldContract);
-        goldContract.methods.approve(coinbase, 9999999).send().on('transactionHash', function(hash){
-            console.log(hash);
-        })
-        .on('receipt', function(receipt){
-            console.log(receipt);
-        });
-        // .on('confirmation', function(confirmationNumber, receipt){
-        //     if (confirmationNumber>1)
-        //         console.log(receipt);
-        // })
-        // .on('error', console.error);
-    }
-
-
     render() {
         const self = this;
         const {projects, fastxchain} = this.props;
@@ -325,13 +298,6 @@ export class Leaderboard extends Component {
                 <div>
                     <span>Gold Balance: {gold_balance}</span>
                     <Button bsStyle="primary" bsSize="small" onClick={this.needMoreGold} style={{margin: "2px 0px 2px 10px"}}>I Need More Gold</Button>
-                    <Button bsSize="small" onClick={()=>{
-                        var key = prompt("Set your key, FOR TEST USE ONLY!");
-                        self.setState({
-                            ...self.state,
-                            key: key,
-                        });
-                    }} style={{margin: "2px 10px"}}>Set Key ( FOR TEST USE ONLY )</Button>
                 </div>
                 <br />
                 <Table striped bordered hover>
@@ -348,8 +314,6 @@ export class Leaderboard extends Component {
                     </tbody>
                 </Table>
                 <Button bsStyle="primary" bsSize="small" onClick={this.showModel.bind(this)}>Create Project</Button>
-                <Button bsStyle="primary" bsSize="small" onClick={this.callContract}>Call Contract</Button>
-
                 <MyLargeModal show={this.props.isShow} onLoad={load} onHide={lgClose} />
             </div>
         );
